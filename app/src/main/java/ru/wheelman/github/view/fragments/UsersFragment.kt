@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import ru.wheelman.github.App
-import ru.wheelman.github.R
 import ru.wheelman.github.databinding.FragmentUsersBinding
 import ru.wheelman.github.view.databinding.DataBindingComponent
 import ru.wheelman.github.viewmodel.UsersFragmentViewModel
@@ -40,12 +39,15 @@ class UsersFragment : Fragment() {
     }
 
     private fun initListeners() {
-        viewModel.showError.observe(this, Observer {
-            if (it) Snackbar.make(
+        viewModel.errors.observe(this, Observer {
+            Snackbar.make(
                 requireView(),
-                getString(R.string.something_went_wrong),
+                it,
                 Snackbar.LENGTH_LONG
             ).show()
+        })
+        viewModel.livePagedList.observe(this, Observer {
+            usersRvAdapter.submitList(it)
         })
     }
 
@@ -55,11 +57,10 @@ class UsersFragment : Fragment() {
 
     private fun initVariables() {
         viewModel = ViewModelProviders.of(this).get(UsersFragmentViewModel::class.java)
-        usersRvAdapter = UsersRvAdapter(viewModel.usersAdapterViewModel, dataBindingComponent)
+        usersRvAdapter = UsersRvAdapter(dataBindingComponent)
     }
 
     override fun onDestroyView() {
-        usersRvAdapter.onDestroyView()
         super.onDestroyView()
     }
 }

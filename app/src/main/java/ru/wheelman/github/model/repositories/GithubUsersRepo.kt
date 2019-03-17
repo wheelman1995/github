@@ -1,33 +1,27 @@
 package ru.wheelman.github.model.repositories
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import androidx.lifecycle.MutableLiveData
+import androidx.paging.DataSource
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
+import ru.wheelman.github.di.qualifiers.ErrorsLiveDataQualifier
 import ru.wheelman.github.di.scopes.AppScope
-import ru.wheelman.github.model.datasources.remote.GithubApi
-import ru.wheelman.github.model.datasources.remote.GithubUser
+import ru.wheelman.github.model.entities.Result
 import ru.wheelman.github.model.entities.User
-import java.io.IOException
 import javax.inject.Inject
 
 @AppScope
-class GithubUsersRepo @Inject constructor(private val githubApi: GithubApi) : IGithubUsersRepo {
+class GithubUsersRepo @Inject constructor(
+    private val factory: DataSource.Factory<Long, User>,
+    @ErrorsLiveDataQualifier private val errors: MutableLiveData<String>,
+    private val config: PagedList.Config
+) : IGithubUsersRepo {
 
-    override suspend fun getUsers(): List<User> = withContext(Dispatchers.IO) {
-        val response = githubApi.getUsers().execute()
-        val body = response.body()
-        if (body != null && response.isSuccessful) {
-            mapGithubUser(body)
-        } else {
-            throw IOException()
-        }
+    override suspend fun getUsers(): Result {
+        val livePagedList = LivePagedListBuilder<Long, User>(
+            factory,
+            config
+        ).build()
+        return Result(errors, livePagedList)
     }
-
-    private fun mapGithubUser(githubUsers: List<GithubUser>): List<User> =
-        githubUsers.map {
-            User(
-                it.id,
-                it.login,
-                it.avatarUrl
-            )
-        }
 }

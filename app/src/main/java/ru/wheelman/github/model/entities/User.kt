@@ -1,3 +1,11 @@
 package ru.wheelman.github.model.entities
 
-data class User(val id: Long, val name: String, val avatarUrl: String)
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
+data class User(
+    @field:PrimaryKey val id: Long,
+    val name: String,
+    val avatarUrl: String
+)

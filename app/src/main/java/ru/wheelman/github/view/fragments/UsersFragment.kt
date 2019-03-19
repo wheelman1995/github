@@ -27,7 +27,7 @@ class UsersFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         initDagger()
-        val binding = FragmentUsersBinding.inflate(inflater, container, false)
+        val binding = FragmentUsersBinding.inflate(inflater, container, false, dataBindingComponent)
         initVariables()
         initListeners()
         initBinding(binding)
@@ -36,6 +36,7 @@ class UsersFragment : Fragment() {
 
     private fun initBinding(binding: FragmentUsersBinding) {
         binding.adapter = usersRvAdapter
+        binding.viewModel = viewModel
     }
 
     private fun initListeners() {

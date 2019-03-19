@@ -41,21 +41,24 @@ dependencies {
     implementation 'com.google.android.material:material:1.0.0'
 
     //android ktx
-    implementation 'androidx.core:core-ktx:1.1.0-alpha04'
-    implementation 'androidx.collection:collection-ktx:1.1.0-alpha02'
+    implementation 'androidx.core:core-ktx:1.1.0-alpha05'
+    implementation 'androidx.collection:collection-ktx:1.1.0-alpha03'
 
     //testing
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.2-alpha01'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.2-alpha01'
+    androidTestImplementation 'androidx.test:runner:1.1.2-alpha02'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha02'
     testImplementation "androidx.arch.core:core-testing:2.0.0"
     testImplementation group: 'androidx.test.ext', name: 'junit', version: '1.1.0'
+    testImplementation "androidx.room:room-testing:2.1.0-alpha05"
 
     //kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
+//    implementation "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.0.5"
+
 
     //dagger 2
     implementation group: 'com.google.dagger', name: 'dagger', version: '2.21'
@@ -88,6 +91,7 @@ dependencies {
     implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.13.1'
     implementation group: 'com.squareup.retrofit2', name: 'converter-gson', version: '2.5.0'
     implementation group: 'com.squareup.retrofit2', name: 'adapter-rxjava2', version: '2.5.0'
+    implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
 
     //glide
     implementation 'com.github.bumptech.glide:glide:4.9.0'
@@ -96,5 +100,9 @@ dependencies {
     implementation "androidx.paging:paging-runtime-ktx:2.1.0"
     implementation "androidx.paging:paging-rxjava2-ktx:2.1.0"
 
-
+    //rooom
+    implementation "androidx.room:room-runtime:2.1.0-alpha05"
+    kapt "androidx.room:room-compiler:2.1.0-alpha04"
+    implementation "androidx.room:room-ktx:2.1.0-alpha05"
+    implementation "androidx.room:room-rxjava2:2.1.0-alpha05"
 }

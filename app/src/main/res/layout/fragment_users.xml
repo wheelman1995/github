@@ -7,15 +7,26 @@
         <variable
             name="adapter"
             type="ru.wheelman.github.view.fragments.UsersRvAdapter" />
+
+        <variable
+            name="viewModel"
+            type="ru.wheelman.github.viewmodel.UsersFragmentViewModel" />
     </data>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_users"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        onRefreshListener="@{() -> viewModel.onRefresh()}"
+        refreshing="@={viewModel.usersBeingUpdated}"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:adapter="@{adapter}"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+        android:layout_height="match_parent">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_users"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adapter="@{adapter}"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
 
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </layout>

@@ -6,10 +6,11 @@ import androidx.paging.PagedList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import ru.wheelman.github.di.qualifiers.ErrorsLiveDataQualifier
 import ru.wheelman.github.di.scopes.AppScope
 import ru.wheelman.github.model.datasources.local.UsersDb
 import ru.wheelman.github.model.datasources.remote.GithubService
+import ru.wheelman.github.model.datasources.remote.GithubService.Companion.PER_PAGE_DEFAULT
+import ru.wheelman.github.model.datasources.remote.PageKeyedGithubDataSource
 import ru.wheelman.github.model.datasources.remote.UsersBoundaryCallback
 import ru.wheelman.github.model.entities.Result
 import ru.wheelman.github.model.entities.User
@@ -17,25 +18,24 @@ import javax.inject.Inject
 
 @AppScope
 class GithubUsersRepo @Inject constructor(
-    @ErrorsLiveDataQualifier private val errors: MutableLiveData<String>,
     private val usersDb: UsersDb,
     private val githubService: GithubService
 ) : IGithubUsersRepo {
 
-    override suspend fun getUsers(scope: CoroutineScope, perPage: Int): Result =
+    private val config = PagedList.Config.Builder()
+        .setInitialLoadSizeHint(PER_PAGE_DEFAULT)
+        .setPageSize(PER_PAGE_DEFAULT)
+        .build()
+
+    override suspend fun getUsers(scope: CoroutineScope): Result =
         withContext(Dispatchers.IO) {
-            _tryFetchingUsersFromNetwork(perPage)
-            val config = PagedList.Config.Builder()
-                .setInitialLoadSizeHint(perPage)
-                .setPageSize(perPage)
-                .build()
+            val errors = MutableLiveData<String>()
             val factory = usersDb.usersDao().getUsers()
             val usersBoundaryCallback = UsersBoundaryCallback(
                 scope,
                 githubService,
                 errors,
-                usersDb,
-                perPage
+                usersDb
             )
             val livePagedList = LivePagedListBuilder<Int, User>(
                 factory,
@@ -45,27 +45,33 @@ class GithubUsersRepo @Inject constructor(
             Result(errors, livePagedList)
         }
 
-    private suspend fun _tryFetchingUsersFromNetwork(
-        perPage: Int,
-        onSuccess: (suspend () -> Unit)? = null
-    ) {
-        githubService.loadInitialUsers(
-            perPage,
-            { users ->
+    override suspend fun tryFetchingUsersFromNetwork(
+        onSuccess: (suspend () -> Unit)?,
+        onError: (suspend (String) -> Unit)?
+    ) = withContext(Dispatchers.IO) {
+        githubService.getUsers(
+            onSuccess = { users ->
                 usersDb.usersDao().deleteAllUsers()
                 usersDb.usersDao().insertUsers(users)
                 onSuccess?.invoke()
             },
-            { error ->
-                errors.postValue(error)
-            }
+            onError = { onError?.invoke(it) }
         )
     }
 
-    override suspend fun tryFetchingUsersFromNetwork(
-        perPage: Int,
-        onSuccess: (suspend () -> Unit)?
-    ) = withContext(Dispatchers.IO) {
-        _tryFetchingUsersFromNetwork(perPage, onSuccess)
-    }
+    override suspend fun findUsers(query: String, scope: CoroutineScope): Result =
+        withContext(Dispatchers.IO) {
+            val errors = MutableLiveData<String>()
+            val factory = PageKeyedGithubDataSource.Factory(
+                githubService,
+                scope,
+                query,
+                errors
+            )
+            val livePagedList = LivePagedListBuilder<Long, User>(
+                factory,
+                config
+            ).build()
+            Result(errors, livePagedList)
+        }
 }

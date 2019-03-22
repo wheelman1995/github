@@ -7,5 +7,7 @@ import androidx.room.PrimaryKey
 data class User(
     @field:PrimaryKey val id: Long,
     val name: String,
-    val avatarUrl: String
+    val avatarUrl: String,
+    val score: Float,
+    val nextUserId: Long?
 )

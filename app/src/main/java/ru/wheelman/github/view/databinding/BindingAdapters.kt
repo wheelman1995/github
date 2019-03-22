@@ -30,8 +30,8 @@ class BindingAdapters @Inject constructor(private val imageLoader: ImageLoader<A
     }
 
     @BindingAdapter("refreshing")
-    fun setRefreshing(srl: SwipeRefreshLayout, oldValue: Boolean, newValue: Boolean) {
-        if (oldValue != newValue) srl.isRefreshing = newValue
+    fun setRefreshing(srl: SwipeRefreshLayout, newValue: Boolean) {
+        if (srl.isRefreshing != newValue) srl.isRefreshing = newValue
     }
 
     @BindingAdapter("onRefreshListener", "refreshingAttrChanged", requireAll = false)
@@ -42,8 +42,8 @@ class BindingAdapters @Inject constructor(private val imageLoader: ImageLoader<A
     ) {
         if (orl == ibl && orl == null) return
         srl.setOnRefreshListener {
-            orl?.onRefresh()
             ibl?.onChange()
+            orl?.onRefresh()
         }
     }
 }

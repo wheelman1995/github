@@ -8,9 +8,11 @@ import ru.wheelman.github.model.entities.User
 
 private const val NAME = "users"
 fun getUsersDb(context: Context) =
-    Room.databaseBuilder(context, UsersDb::class.java, NAME).build()
+    Room.databaseBuilder(context, UsersDb::class.java, NAME)
+        .fallbackToDestructiveMigration()
+        .build()
 
-@Database(entities = [User::class], version = 1)
+@Database(entities = [User::class], version = 2)
 abstract class UsersDb : RoomDatabase() {
 
     abstract fun usersDao(): UsersDao

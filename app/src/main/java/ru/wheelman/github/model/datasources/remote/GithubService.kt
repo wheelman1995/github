@@ -17,7 +17,7 @@ class GithubService @Inject constructor(private val githubApi: GithubApi) {
     companion object {
         private const val PER_PAGE_MIN = 1L
         private const val PER_PAGE_MAX = 100L
-        const val PER_PAGE_DEFAULT = 20
+        private const val PER_PAGE_DEFAULT = 20
         private const val SINCE = 0L
     }
 

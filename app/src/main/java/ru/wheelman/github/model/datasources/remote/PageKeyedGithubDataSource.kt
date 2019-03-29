@@ -6,6 +6,7 @@ import androidx.paging.PageKeyedDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.wheelman.github.model.entities.User
+import ru.wheelman.github.model.repositories.GithubUsersRepo.Companion.PAGE_SIZE
 
 class PageKeyedGithubDataSource(
     private val scope: CoroutineScope,
@@ -20,9 +21,10 @@ class PageKeyedGithubDataSource(
     ) {
         scope.launch {
             githubService.findUsers(
+                perPage = params.requestedLoadSize,
                 query = query,
                 onSuccess = {
-                    callback.onResult(it, null, 2)
+                    callback.onResult(it, null, params.requestedLoadSize / PAGE_SIZE + 1L)
                 },
                 onError = {
                     errors.postValue(it)
@@ -37,6 +39,7 @@ class PageKeyedGithubDataSource(
     ) {
         scope.launch {
             githubService.findUsers(
+                perPage = params.requestedLoadSize,
                 query = query,
                 page = params.key,
                 onSuccess = {

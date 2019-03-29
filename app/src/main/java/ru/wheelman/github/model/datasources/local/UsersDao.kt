@@ -14,8 +14,11 @@ interface UsersDao {
     fun getUsers(): DataSource.Factory<Int, User>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertUsers(users: List<User>)
+    suspend fun insertUsers(users: List<User>)
 
     @Query("delete from User")
-    fun deleteAllUsers()
+    suspend fun deleteAllUsers()
+
+    @Query("select count(*) from User")
+    suspend fun getUsersNumber(): Long
 }

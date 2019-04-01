@@ -6,12 +6,17 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
+import com.jakewharton.rxbinding3.appcompat.queryTextChanges
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import ru.wheelman.github.App
 import ru.wheelman.github.R
 import ru.wheelman.github.databinding.FragmentUsersBinding
 import ru.wheelman.github.view.databinding.DataBindingComponent
 import ru.wheelman.github.viewmodel.UsersFragmentViewModel
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class UsersFragment : Fragment() {
@@ -22,6 +27,7 @@ class UsersFragment : Fragment() {
     private lateinit var allUsersRvAdapter: UsersRvAdapter
     private lateinit var foundUsersRvAdapter: UsersRvAdapter
     private lateinit var binding: FragmentUsersBinding
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +45,7 @@ class UsersFragment : Fragment() {
 
     private fun initBinding() {
         binding.viewModel = viewModel
+        binding.lifecycleOwner = this
     }
 
     private fun initListeners() {
@@ -71,6 +78,12 @@ class UsersFragment : Fragment() {
     private fun initUi() {
         setHasOptionsMenu(true)
         binding.rvUsers.setHasFixedSize(true)
+        binding.rvUsers.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL
+            )
+        )
     }
 
     private fun initVariables() {
@@ -83,17 +96,17 @@ class UsersFragment : Fragment() {
         inflater.inflate(R.menu.options_menu, menu)
         val searchItem = menu.findItem(R.id.search)
         val searchView = searchItem.actionView as SearchView
-        searchView.run {
+        val d = searchView.run {
             queryHint = getString(R.string.enter_username)
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-
-                override fun onQueryTextSubmit(query: String?): Boolean = true
-
-                override fun onQueryTextChange(newText: String): Boolean {
-                    viewModel.searchQuery.onNext(newText)
-                    return true
-                }
-            })
+            queryTextChanges().debounce(300, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { viewModel.onQueryTextChange(it) }
         }
+        compositeDisposable.add(d)
+    }
+
+    override fun onDestroyView() {
+        compositeDisposable.dispose()
+        super.onDestroyView()
     }
 }

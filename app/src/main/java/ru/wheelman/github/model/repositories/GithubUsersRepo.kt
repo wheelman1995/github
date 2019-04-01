@@ -9,7 +9,6 @@ import kotlinx.coroutines.withContext
 import ru.wheelman.github.di.scopes.AppScope
 import ru.wheelman.github.model.datasources.local.UsersDb
 import ru.wheelman.github.model.datasources.remote.GithubService
-import ru.wheelman.github.model.datasources.remote.GithubService.Companion.PER_PAGE_DEFAULT
 import ru.wheelman.github.model.datasources.remote.PageKeyedGithubDataSource
 import ru.wheelman.github.model.datasources.remote.UsersBoundaryCallback
 import ru.wheelman.github.model.entities.Result
@@ -22,19 +21,22 @@ class GithubUsersRepo @Inject constructor(
     private val githubService: GithubService
 ) : IGithubUsersRepo {
 
+    companion object {
+        internal const val INITIAL_LOAD_SIZE = 60
+        internal const val PAGE_SIZE = 20
+    }
+
     private val config = PagedList.Config.Builder()
-        .setInitialLoadSizeHint(PER_PAGE_DEFAULT)
-        .setPageSize(PER_PAGE_DEFAULT)
+        .setInitialLoadSizeHint(INITIAL_LOAD_SIZE)
+        .setPageSize(PAGE_SIZE)
         .build()
 
     override suspend fun getUsers(scope: CoroutineScope): Result =
         withContext(Dispatchers.IO) {
-            val errors = MutableLiveData<String>()
             val factory = usersDb.usersDao().getUsers()
             val usersBoundaryCallback = UsersBoundaryCallback(
                 scope,
                 githubService,
-                errors,
                 usersDb
             )
             val livePagedList = LivePagedListBuilder<Int, User>(
@@ -42,7 +44,7 @@ class GithubUsersRepo @Inject constructor(
                 config
             ).setBoundaryCallback(usersBoundaryCallback)
                 .build()
-            Result(errors, livePagedList)
+            Result(usersBoundaryCallback.errors, livePagedList)
         }
 
     override suspend fun tryFetchingUsersFromNetwork(
@@ -50,6 +52,7 @@ class GithubUsersRepo @Inject constructor(
         onError: (suspend (String) -> Unit)?
     ) = withContext(Dispatchers.IO) {
         githubService.getUsers(
+            perPage = INITIAL_LOAD_SIZE,
             onSuccess = { users ->
                 usersDb.usersDao().deleteAllUsers()
                 usersDb.usersDao().insertUsers(users)

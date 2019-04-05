@@ -42,6 +42,10 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude("META-INF/atomicfu.kotlin_module")
+    }
+
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
@@ -60,6 +64,7 @@ dependencies {
     implementation 'androidx.collection:collection-ktx:1.1.0-alpha03'
 
     //testing
+    implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-test', version: '1.2.0-alpha'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     androidTestImplementation 'androidx.test:runner:1.1.1'
@@ -74,6 +79,8 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.2'
     testImplementation "io.mockk:mockk:1.9.3"
 //    androidTestImplementation "io.mockk:mockk-android:1.9.3"
+    kaptTest "com.google.dagger:dagger-compiler:2.21"
+    kaptTest 'com.google.dagger:dagger-android-processor:2.21'
 
     //kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

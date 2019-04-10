@@ -9,5 +9,5 @@ data class User(
     val name: String,
     val avatarUrl: String,
     val score: Float,
-    val nextUserId: Long?
+    val nextPageKey: Long?
 )

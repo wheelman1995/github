@@ -14,8 +14,7 @@ import javax.inject.Inject
 
 class UsersFragmentViewModel : ViewModel() {
 
-    @Inject
-    internal lateinit var githubUsersRepo: IGithubUsersRepo
+    @Inject internal lateinit var githubUsersRepo: IGithubUsersRepo
     private val _errors: MediatorLiveData<String> = MediatorLiveData()
     private val _allUsersLivePagedList: MediatorLiveData<PagedList<User>> = MediatorLiveData()
     private val _foundUsersLivePagedList: MediatorLiveData<PagedList<User>> = MediatorLiveData()

@@ -2,8 +2,8 @@ package ru.wheelman.github
 
 import io.mockk.every
 import io.mockk.mockk
-import junit.framework.Assert.assertEquals
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.net.URL
 import java.nio.file.Files

@@ -37,7 +37,7 @@ class UsersBoundaryCallback constructor(
         scope.launch {
             githubService.getUsers(
                 perPage = PAGE_SIZE,
-                pageKey = itemAtEnd.nextUserId,
+                pageKey = itemAtEnd.nextPageKey,
                 onSuccess = onSuccess,
                 onError = onError
             )

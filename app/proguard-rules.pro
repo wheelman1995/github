@@ -20,3 +20,13 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keep class kotlin.reflect.jvm.internal.** { *; }
+-keep class kotlin.** { *; }
+-keep class kotlinx.** { *; }
+-keep class java.** { *; }
+-keep class javax.** { *; }
+-keep class android.** { *; }
+-keep class androidx.** { *; }
+-keep class io.mockk.** { *; }
+-keep class org.jetbrains.** { *; }
+-dontwarn **
+-verbose

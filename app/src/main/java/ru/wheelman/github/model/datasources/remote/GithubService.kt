@@ -1,6 +1,7 @@
 package ru.wheelman.github.model.datasources.remote
 
 import androidx.annotation.IntRange
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -30,6 +31,12 @@ class GithubService @Inject constructor(private val githubApi: GithubApi) {
         onSuccess: suspend (List<User>) -> Unit,
         onError: suspend (String) -> Unit
     ) {
+        try {
+            checkPerPage(perPage)
+        } catch (e: IllegalArgumentException) {
+            onError(e.message!!)
+            return
+        }
         pageKey?.let {
             val response: Response<List<GithubUser>>
             try {
@@ -50,10 +57,10 @@ class GithubService @Inject constructor(private val githubApi: GithubApi) {
                         githubUser.login,
                         githubUser.avatarUrl,
                         githubUser.score,
-                        body[index + 1].id
+                        body[index + 1].id - 1
                     )
                 }.toMutableList()
-                val nextUserIdOfLastUser = findNextUserIdOfLastUser(response.headers())
+                val nextPageKey = findNextPageKey(response.headers())
                 val (id, login, avatarUrl, score) = body.last()
                 users.add(
                     User(
@@ -61,7 +68,7 @@ class GithubService @Inject constructor(private val githubApi: GithubApi) {
                         login,
                         avatarUrl,
                         score,
-                        nextUserIdOfLastUser
+                        nextPageKey
                     )
                 )
                 onSuccess(users)
@@ -71,6 +78,12 @@ class GithubService @Inject constructor(private val githubApi: GithubApi) {
         } ?: onError("Could not find next page")
     }
 
+    private fun checkPerPage(perPage: Int) {
+        if (perPage !in PER_PAGE_MIN..PER_PAGE_MAX) {
+            throw IllegalArgumentException("per page value is not in the supported range!")
+        }
+    }
+
     internal suspend fun findUsers(
         @IntRange(from = PER_PAGE_MIN, to = PER_PAGE_MAX) perPage: Int = PER_PAGE_DEFAULT,
         page: Long = 1,
@@ -78,6 +91,12 @@ class GithubService @Inject constructor(private val githubApi: GithubApi) {
         onSuccess: suspend (List<User>) -> Unit,
         onError: suspend (String) -> Unit
     ) {
+        try {
+            checkPerPage(perPage)
+        } catch (e: IllegalArgumentException) {
+            onError(e.message!!)
+            return
+        }
         val result: SearchResult
         try {
             val newSearchDeferred = githubApi.searchUsers(query, page, perPage)
@@ -87,8 +106,12 @@ class GithubService @Inject constructor(private val githubApi: GithubApi) {
             }
             result = newSearchDeferred.await()
         } catch (e: Exception) {
-            onError(e.message ?: "Unknown error")
-            return
+            if (e is CancellationException) {
+                throw e
+            } else {
+                onError(e.message ?: "Unknown error")
+                return
+            }
         }
         onSuccess(result.items.map {
             User(
@@ -108,7 +131,7 @@ class GithubService @Inject constructor(private val githubApi: GithubApi) {
         }
     }
 
-    private fun findNextUserIdOfLastUser(headers: Headers): Long? {
+    private fun findNextPageKey(headers: Headers): Long? {
         val linkHeader = headers.get("Link")
         return linkHeader?.let {
             val pattern = Pattern.compile("since=\\d+")

@@ -38,7 +38,7 @@ class UsersFragmentViewModelTest {
             .build()
         mockkObject(App.Companion)
         every { App.Companion.appComponent } returns appTestComponent
-        viewModel = spyk<UsersFragmentViewModel>(recordPrivateCalls = true)
+        viewModel = spyk(objToCopy = UsersFragmentViewModel(), recordPrivateCalls = true)
         every { viewModel.loading } returns loading
     }
 

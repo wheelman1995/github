@@ -34,7 +34,7 @@ class GithubUsersRepoTest {
     fun tryFetchingUsersFromNetwork() = runBlocking {
         var onSuccessInvoked = false
         var onErrorInvoked = false
-        val user = User(1, "name", "url", 2.1f, 2)
+        val user = User(1, "name", "url", 2.1f, 1, "url1")
         val userList = listOf(user)
         val onSuccess: (suspend () -> Unit) = { onSuccessInvoked = true }
         val onError: (suspend (String) -> Unit) = { onErrorInvoked = true }

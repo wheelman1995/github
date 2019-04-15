@@ -3,6 +3,8 @@ package ru.wheelman.github.view
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
 import ru.wheelman.github.R
@@ -21,5 +23,6 @@ class MainActivity : AppCompatActivity() {
         val binding =
             DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         setSupportActionBar(binding.toolbar)
+        setupActionBarWithNavController(findNavController(R.id.nav_host_fragment))
     }
 }

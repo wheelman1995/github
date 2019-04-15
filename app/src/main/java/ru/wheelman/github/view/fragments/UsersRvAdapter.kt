@@ -11,7 +11,9 @@ import ru.wheelman.github.view.databinding.DataBindingComponent
 import ru.wheelman.github.view.fragments.UsersRvAdapter.VH
 
 class UsersRvAdapter(
-    private val dataBindingComponent: DataBindingComponent
+    private val dataBindingComponent: DataBindingComponent,
+    private val onUsernameClick: ((User) -> Unit)? = null,
+    private val onAvatarClick: ((User) -> Unit)? = null
 ) : PagedListAdapter<User, VH>(USER_COMPARATOR) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -21,6 +23,8 @@ class UsersRvAdapter(
             false,
             dataBindingComponent
         )
+        binding.onAvatarClick = onAvatarClick
+        binding.onUsernameClick = onUsernameClick
         return VH(binding)
     }
 

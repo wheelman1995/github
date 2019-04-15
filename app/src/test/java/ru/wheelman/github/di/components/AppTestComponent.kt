@@ -2,14 +2,14 @@ package ru.wheelman.github.di.components
 
 import dagger.BindsInstance
 import dagger.Component
-import ru.wheelman.github.di.modules.AppModule
+import ru.wheelman.github.di.modules.FakeAppModule
 import ru.wheelman.github.di.modules.NetworkModule
 import ru.wheelman.github.di.scopes.AppScope
 import ru.wheelman.github.model.repositories.IGithubUsersRepo
 
 @Component(
     modules = [
-        AppModule::class,
+        FakeAppModule::class,
         NetworkModule::class
     ]
 )

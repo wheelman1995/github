@@ -3,6 +3,7 @@ package ru.wheelman.github.viewmodel
 import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.*
 import androidx.paging.PagedList
+import androidx.test.espresso.idling.CountingIdlingResource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -15,6 +16,7 @@ import javax.inject.Inject
 class UsersFragmentViewModel : ViewModel() {
 
     @Inject internal lateinit var githubUsersRepo: IGithubUsersRepo
+    @Inject internal lateinit var countingIdlingResource: CountingIdlingResource
     private val _errors: MediatorLiveData<String> = MediatorLiveData()
     private val _allUsersLivePagedList: MediatorLiveData<PagedList<User>> = MediatorLiveData()
     private val _foundUsersLivePagedList: MediatorLiveData<PagedList<User>> = MediatorLiveData()
@@ -56,9 +58,11 @@ class UsersFragmentViewModel : ViewModel() {
 
     private fun loadData(block: suspend () -> Unit) {
         viewModelScope.launch {
+            countingIdlingResource.increment()
             loading.set(true)
             block()
             loading.set(false)
+            countingIdlingResource.decrement()
         }
     }
 

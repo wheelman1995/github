@@ -12,7 +12,7 @@ fun getUsersDb(context: Context) =
         .fallbackToDestructiveMigration()
         .build()
 
-@Database(entities = [User::class], version = 2)
+@Database(entities = [User::class], version = 3)
 abstract class UsersDb : RoomDatabase() {
 
     abstract fun usersDao(): UsersDao

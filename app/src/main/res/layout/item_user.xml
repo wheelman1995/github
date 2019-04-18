@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
-        <import type="android.view.View" />
+        <variable
+            name="onAvatarClick"
+            type="kotlin.jvm.functions.Function1&lt;ru.wheelman.github.model.entities.User , kotlin.Unit&gt;" />
 
+        <variable
+            name="onUsernameClick"
+            type="kotlin.jvm.functions.Function1&lt;ru.wheelman.github.model.entities.User , kotlin.Unit&gt;" />
         <variable
             name="user"
             type="ru.wheelman.github.model.entities.User" />
@@ -16,18 +22,22 @@
         android:layout_margin="8dp">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_avatar"
+            android:id="@+id/aciv_avatar"
             imageUrl="@{user.avatarUrl}"
             android:layout_width="80dp"
+            android:onClick="@{() -> onAvatarClick.invoke(user)}"
+            tools:src="@drawable/avatar_placeholder"
             android:layout_height="80dp" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="@{() -> onUsernameClick.invoke(user)}"
             android:layout_gravity="center"
             android:layout_marginStart="8dp"
             android:text="@{user.name}"
+            tools:text="username"
             android:textSize="32sp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

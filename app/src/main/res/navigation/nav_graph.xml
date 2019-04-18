@@ -8,6 +8,17 @@
     <fragment
         android:id="@+id/usersFragment"
         android:name="ru.wheelman.github.view.fragments.UsersFragment"
-        android:label="UsersFragment"
-        tools:layout="@layout/fragment_users" />
+        tools:layout="@layout/fragment_users">
+        <action
+            android:id="@+id/action_usersFragment_to_avatarFragment"
+            app:destination="@id/avatarFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/avatarFragment"
+        android:name="ru.wheelman.github.view.fragments.AvatarFragment"
+        tools:layout="@layout/fragment_avatar">
+        <argument
+            android:name="avatar_url"
+            app:argType="string" />
+    </fragment>
 </navigation>

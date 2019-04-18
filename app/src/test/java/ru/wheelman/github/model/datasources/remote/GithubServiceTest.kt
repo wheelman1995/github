@@ -107,14 +107,14 @@ class GithubServiceTest {
     @Test
     fun `successful getUsers invocation`() = runBlocking {
         val gitUsers = listOf(
-            GithubUser(1, "user1", "url1", 1.0f),
-            GithubUser(2, "user2", "url2", 2.0f),
-            GithubUser(3, "user3", "url3", 3.0f)
+            GithubUser(1, "user1", "url1", 1.0f, "url1"),
+            GithubUser(2, "user2", "url2", 2.0f, "url2"),
+            GithubUser(3, "user3", "url3", 3.0f, "url3")
         )
         val users = listOf(
-            User(1, "user1", "url1", 1.0f, 1),
-            User(2, "user2", "url2", 2.0f, 2),
-            User(3, "user3", "url3", 3.0f, 3)
+            User(1, "user1", "url1", 1.0f, 1, "url1"),
+            User(2, "user2", "url2", 2.0f, 2, "url2"),
+            User(3, "user3", "url3", 3.0f, 3, "url3")
         )
         val successfulResponse = Response.success(
             gitUsers,
@@ -172,9 +172,9 @@ class GithubServiceTest {
         every { githubApi.searchUsers(any(), any(), any()) } answers {
             val query = firstArg<String>()
             val gitUsers = listOf(
-                GithubUser(1, "user$query", "url1", 1.0f),
-                GithubUser(2, "user$query", "url2", 2.0f),
-                GithubUser(3, "user$query", "url3", 3.0f)
+                GithubUser(1, "user$query", "url1", 1.0f, "url1"),
+                GithubUser(2, "user$query", "url2", 2.0f, "url2"),
+                GithubUser(3, "user$query", "url3", 3.0f, "url3")
             )
             val searchResult = SearchResult(gitUsers, 123L)
             async {
@@ -191,9 +191,9 @@ class GithubServiceTest {
                             query = "$i",
                             onSuccess = {
                                 val users = listOf(
-                                    User(1, "user$i", "url1", 1.0f, null),
-                                    User(2, "user$i", "url2", 2.0f, null),
-                                    User(3, "user$i", "url3", 3.0f, null)
+                                    User(1, "user$i", "url1", 1.0f, null, "url1"),
+                                    User(2, "user$i", "url2", 2.0f, null, "url2"),
+                                    User(3, "user$i", "url3", 3.0f, null, "url3")
                                 )
                                 assertEquals(users, it)
                                 onSuccessInvoked = true

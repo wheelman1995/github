@@ -2,4 +2,5 @@
     <string name="app_name">Github</string>
     <string name="enter_username">Enter a username</string>
     <string name="search">search</string>
+    <string name="no_web_browser_found">No web browser found!</string>
 </resources>

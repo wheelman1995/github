@@ -57,18 +57,20 @@ class GithubService @Inject constructor(private val githubApi: GithubApi) {
                         githubUser.login,
                         githubUser.avatarUrl,
                         githubUser.score,
-                        body[index + 1].id - 1
+                        body[index + 1].id - 1,
+                        githubUser.htmlUrl
                     )
                 }.toMutableList()
                 val nextPageKey = findNextPageKey(response.headers())
-                val (id, login, avatarUrl, score) = body.last()
+                val (id, login, avatarUrl, score, url) = body.last()
                 users.add(
                     User(
                         id,
                         login,
                         avatarUrl,
                         score,
-                        nextPageKey
+                        nextPageKey,
+                        url
                     )
                 )
                 onSuccess(users)
@@ -119,7 +121,8 @@ class GithubService @Inject constructor(private val githubApi: GithubApi) {
                 it.login,
                 it.avatarUrl,
                 it.score,
-                null
+                null,
+                it.htmlUrl
             )
         })
     }
